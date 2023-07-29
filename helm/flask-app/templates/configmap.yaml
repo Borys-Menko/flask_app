@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+data:
+  vaultJenkins.sh: |
+    #!/bin/bash
+    vault policy write jenkins-policy - <<EOF
+      path "secret/jenkins-secrets" {
+        capabilities = ["create", "read"]
+      }
+    EOF
+
+    JENKINS_TOKEN=$(vault token create -format=json -policy="jenkins-policy" | jq -r ".auth.client_token")
+
+    export VAULT_TOKEN=$JENKINS_TOKEN
+
+    vault kv put -output-policy -mount=secret secret/jenkins-secrets contact_email="john.smith@acme.com"
+
+    email=$(vault kv get -output-policy -mount=secret secret/jenkins-secrets/contact_email)
+
+    echo "This is contact email: $email"

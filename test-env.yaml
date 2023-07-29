@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Values.pod.name }}
+  labels: 
+    app: my-k8s
+    env: test
+    owner: Borys
+spec:
+  hostNetwork: true
+  containers:
+    - name: web
+      image: {{ .Values.images.web }}
+      ports:
+        - containerPort: 5000
+    - name: redis
+      image: {{ .Values.images.redis }}
+      ports:
+        - containerPort: 6379
+    - name: redis-commander
+      image: {{ .Values.images.redis-commander }}
+      ports: 
+        - containerPort: 8081

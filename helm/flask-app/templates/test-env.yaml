@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Values.pod.name }}
+  labels: 
+    app: my-k8s
+    env: test
+    owner: Borys
+spec:
+  volumes:
+    - name: empty-dir-volume
+      emptyDir: {}
+    - name: config-volume
+      configMap:
+        name: {{ .Release.Name }}-configmap
+  initContainers:
+    - name: init-container
+      image: ubuntu
+      command: 
+      - touch 
+      - "/app/volum/initial-file.txt"
+      volumeMounts:
+        - name: empty-dir-volume
+          mountPath: /app/volum
+  containers:
+    - name: web
+      image: {{ .Values.images.web }}
+      imagePullPolicy: Never
+      ports:
+        - containerPort: 5000
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 5000
+        initialDelaySeconds: 10
+        timeoutSeconds: 2
+        periodSeconds: 3
+        successThreshold: 1
+        failureThreshold: 10
+      readinessProbe:
+        tcpSocket:
+          port: 5000
+        initialDelaySeconds: 10
+        periodSeconds: 5
+        timeoutSeconds: 2
+        successThreshold: 1
+        failureThreshold: 10
+      volumeMounts:  
+        - name: empty-dir-volume
+          mountPath: /app/volum  
+        - name: config-volume
+          mountPath: /app/configMap        
+          readOnly: false
+    - name: redis
+      image: {{ .Values.images.redis }}
+      ports:
+        - containerPort: 6379
+    - name: redis-commander
+      image: {{ .Values.images.commander }}
+      ports: 
+        - containerPort: 8081

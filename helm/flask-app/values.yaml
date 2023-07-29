@@ -1,0 +1,10 @@
+test: welcome
+
+pod:
+  name: prod-env
+  vault: vault-dev
+images:
+  web: flask_app-web:v2
+  redis: redis
+  commander: ghcr.io/joeferner/redis-commander:latest
+  vault: vault:1.13.3
