@@ -253,7 +253,6 @@ controller:
     - git:5.1.0
     - hashicorp-vault-plugin:360.v0a_1c04cf807d
     - configuration-as-code:1647.ve39ca_b_829b_42
-    - com.coravy.hudson.plugins.github:v1.36.1
 
   # Set to false to download the minimum required version of all dependencies.
   installLatestPlugins: true
@@ -339,16 +338,17 @@ controller:
     configScripts: 
       welcome-message: |
         jenkins:
-          systemMessage: "${github-secret}"
+          systemMessage: "${username}"
         credentials:
           system:
             domainCredentials:
             - credentials:
-              - string:
-                  description: "qwer first secret"
-                  id: "qwer"
+              - usernamePassword:
+                  description: "github-cred-github-secret"
+                  id: "github-cred"
+                  password: "${token}"
                   scope: GLOBAL
-                  secret: "${sonarqube-api-key}"
+                  username: "${username}"
     # Allows adding to the top-level security JCasC section. For legacy,  default the chart includes apiToken configurations
     security:
       apiToken:
