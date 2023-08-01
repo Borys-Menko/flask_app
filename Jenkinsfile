@@ -2,8 +2,8 @@ pipeline {
   agent {
     kubernetes {
       cloud 'node'
+      inheritFrom 'default'
       label 'jenkins-jenkins-agent'
-      defaultContainer 'jnlp'
     }
   }
   stages {
